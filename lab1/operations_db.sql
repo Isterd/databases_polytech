@@ -19,4 +19,3 @@ CREATE TABLE operations (
     create_date timestamp(3),
     balance_id integer references balance(id)
 );
-

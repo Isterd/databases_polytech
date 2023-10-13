@@ -3,8 +3,8 @@ pg_dump -U test -h localhost -p 5432 operations_db > ./lab1/backup.sql
 #подключаемся к СУБД, дропаем базу
 psql -U test -h localhost -p 5432 -d postgres
 \l
-drop database car_db;
+drop database operations_db;
 \l
-create database car_db;
+create database operations_db;
 # восстанавливаем по бекапу
 psql -h localhost -p 5432 -U test -d operations_db -f ./lab1/backup.sql

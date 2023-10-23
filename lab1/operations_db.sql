@@ -17,5 +17,5 @@ CREATE TABLE operations (
     debit numeric(18, 2),
     credit numeric(18, 2),
     create_date timestamp(3),
-    balance_id integer references balance(id)
+    balance_id integer references balance(id) ON DELETE CASCADE
 );

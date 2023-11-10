@@ -1,20 +1,21 @@
 --Посчитать прибыль за заданную дату
-SELECT amount FROM balance WHERE create_date = '2022-05-20';
+SELECT debit - credit AS amount FROM operations WHERE create_date = '2022-01-20';
 
 --Вывести наименования всех статей, в рамках которых не проводилось
 --операций за заданный период времени.
-SELECT name FROM articles WHERE id IN (SELECT article_id
+SELECT name FROM articles WHERE id NOT IN (SELECT article_id
              FROM operations
-             WHERE create_date NOT BETWEEN '2022-05-07' AND '2022-06-25');
+             WHERE create_date BETWEEN date '2022-03-01' AND date '2022-03-25');
 
 --Вывести операции и наименования статей, включая статьи, в рамках
 --которых не проводились операции.
-SELECT name, debit, credit, create_date FROM articles A INNER JOIN operations O
+SELECT name, debit, credit, create_date FROM articles A LEFT JOIN operations O
 ON A.id = O.article_id;
 
 --Вывести число балансов, в которых учтены операции принадлежащие
 --статье с заданным наименованием.
-SELECT COUNT(*) FROM balance B INNER JOIN operations O
-ON B.debit = O.debit AND B.credit = O.credit AND B.create_date = O.create_date
-INNER JOIN articles A ON O.article_id = A.id WHERE A.name = 'Покупка топлива';
-
+SELECT COUNT(DISTINCT b.id) AS balance_count
+FROM balance b
+INNER JOIN operations o ON b.id = o.balance_id
+INNER JOIN articles a ON o.article_id = a.id
+WHERE a.name = 'Продукты питания';

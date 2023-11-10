@@ -1,25 +1,41 @@
 --Увеличить сумму расхода операций, выполненных в рамках статьи, заданной по наименованию, на заданную величину.
 --Расход и прибыль сформированных на основании модифицируемых операций балансов должны быть пересчитаны.
-UPDATE operations SET credit = credit + 1000
+DO $$
+DECLARE increase_in_flow INTEGER;
+DECLARE article_name VARCHAR;
+
+BEGIN
+
+increase_in_flow = 1000;
+article_name = 'Медицинские расходы';
+
+UPDATE operations SET credit = credit + increase_in_flow
                   WHERE article_id IN (SELECT id
                                        FROM articles
-                                       WHERE name = 'Оплата медицинских услуг');
+                                       WHERE name = article_name);
 UPDATE balance
-        SET credit = credit + 1000,
-            amount = debit - credit - 1000
+        SET credit = credit + increase_in_flow,
+            amount = debit - credit - increase_in_flow
         WHERE id IN (SELECT balance_id
                      FROM operations
                      WHERE article_id IN (SELECT id
                                           FROM articles
-                                          WHERE name = 'Оплата медицинских услуг'));
+                                          WHERE name = article_name));
+END $$;
 
 --В рамках транзакции поменять заданную статью во всех операциях на другую и удалить ее.
-BEGIN;
+START TRANSACTION;
 
-UPDATE operations SET article_id = 6
-WHERE article_id IN (SELECT id FROM articles
-                               WHERE name = 'Покупка топлива');
+DO $$
+DECLARE old_article_id INT;
+DECLARE new_article_id INT;
 
-DELETE FROM articles WHERE name = 'Покупка топлива';
+BEGIN
+SELECT old_article_id = id FROM articles WHERE name = 'Одежда';
+SELECT new_article_id = id FROM articles WHERE name = 'Развлечения';
+
+UPDATE operations SET article_id = new_article_id WHERE article_id = old_article_id;
+DELETE FROM articles WHERE id = old_article_id;
+END $$;
 
 COMMIT;

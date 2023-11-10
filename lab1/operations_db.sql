@@ -13,9 +13,9 @@ CREATE TABLE articles (
 
 CREATE TABLE operations (
     id serial primary key,
-    article_id integer references articles(id),
+    article_id integer references articles(id) ON DELETE CASCADE,
     debit numeric(18, 2),
     credit numeric(18, 2),
     create_date timestamp(3),
-    balance_id integer references balance(id) ON DELETE CASCADE
+    balance_id integer references balance(id)
 );
